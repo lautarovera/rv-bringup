@@ -1,0 +1,9 @@
+{
+  "version": 3,
+  "configurePresets": [{
+    "name": "default",
+    "generator": "Ninja",
+    "binaryDir": "${sourceDir}/build",
+    "toolchainFile": "${sourceDir}/cmake/riscv64-elf.cmake"
+  }]
+}

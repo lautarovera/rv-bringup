@@ -2,7 +2,7 @@
 
 Bare-metal RISC-V (RV64) platform bring-up on QEMU `virt`, from reset to PCIe DMA, with no OS, no SBI and no vendor SDK.
 
-The goal is to walk the same path firmware takes on a new SoC: get a console alive, own the trap path, set up timers and interrupt controllers, hand off from M-mode to S-mode behind PMP, then enumerate PCIe, assign BARs and move data by DMA. Every step has a self-test that runs in CI.
+The goal is to walk the same path firmware takes on a new SoC: get a console alive, own the trap path, set up timers and interrupt controllers, hand off from M-mode to S-mode behind PMP, then enumerate PCIe, assign BARs and move data by DMA. Every step will have a self-test that runs in CI.
 
 ## Status
 
@@ -25,17 +25,20 @@ Update the table and uncomment the matching line in `tests/run_qemu.sh` when a m
 Requirements (Ubuntu 24.04 or WSL):
 
 ```
-sudo apt install gcc-riscv64-unknown-elf qemu-system-misc
+sudo apt install gcc-riscv64-unknown-elf qemu-system-misc gdb-multiarch cmake ninja-build
 ```
 
+CMake (>= 3.21) and Ninja are used to configure and build the project:
+
 ```
-make          # build build/rv-bringup.elf
-make run      # boot in QEMU (Ctrl-A X to quit)
-make test     # boot, capture UART, check milestone lines (same as CI)
-make debug    # QEMU halted, GDB on :1234
+cmake --preset default                      # configure into build/
+cmake --build build                         # build build/rv-bringup.elf
+cmake --build build --target run            # boot in QEMU (Ctrl-A X to quit)
+cmake --build build --target debug          # QEMU halted, GDB on :1234
+ctest --test-dir build --output-on-failure  # test all milestones in QEMU
 ```
 
-Expected output today:
+Current expected output:
 
 ```
 rv-bringup: bare-metal RISC-V on QEMU virt

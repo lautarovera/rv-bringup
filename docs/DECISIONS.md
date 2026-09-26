@@ -15,6 +15,13 @@ Short records of the choices made while bringing this platform up. One entry per
 - Decision: hart 0 runs, the rest park in `wfi`.
 - Why: keeps the early milestones deterministic. Waking secondary harts with CLINT software interrupts is a good later milestone.
 
+## D3: Warning on RWX regions
+
+- Context: since binutils 2.39, ld warns when one loadable region is readable, writable and executable. That is a security risk under an OS.
+- Options: (a) add -Wl,--no-warn-rwx-segments, (b) split code (RX) from data (RW) with PHDRS in link.ld file.
+- Decision: (a).
+- Why: do (a) for now, and (b) during M3. Everything runs in M-mode from a single RAM region with no memory protection active, so the warning carries no information until PMP exists in M3.
+
 <!--
 Template for new entries:
 
