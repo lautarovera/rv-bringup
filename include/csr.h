@@ -33,5 +33,7 @@
 
 /* mcause */
 #define MCAUSE_INTERRUPT    (1UL << 63)
+#define CAUSE_ILLEGAL_INSN  2
+#define CAUSE_ECALL_M       11
 
 #endif /* CSR_H */
