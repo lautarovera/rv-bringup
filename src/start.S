@@ -10,10 +10,8 @@ _start:
     csrr    t0, mhartid
     bnez    t0, park
 
-    /* No trap handler yet: point mtvec at a safe spin loop so an early
-     * fault is visible in GDB instead of jumping to address 0.
-     * M1: replace with the real trap vector (trap_vector in trap_entry.S). */
-    la      t0, early_trap
+    /* M1: handler is installed (trap_vector in trap_entry.S). */
+    la      t0, trap_vector
     csrw    mtvec, t0
 
     /* Global pointer (linker relaxation) */

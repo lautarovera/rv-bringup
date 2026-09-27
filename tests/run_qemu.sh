@@ -10,7 +10,7 @@ LOG="$(mktemp)"
 
 REQUIRED=(
   "[M0] boot + uart: OK"
-  # "[M1] traps: OK"
+  "[M1] traps: OK"
   # "[M2] timer interrupt: OK"
   # "[M3] pmp + s-mode: OK"
   # "[M4] plic + uart rx irq: OK"
