@@ -23,8 +23,10 @@ void uart_init(void)
 
 void uart_putc(char c)
 {
-    while (!(mmio_r8(UART0_BASE + REG_LSR) & LSR_THRE))
-        ;
+    while (!(mmio_r8(UART0_BASE + REG_LSR) & LSR_THRE)) {
+        __asm__ volatile ("nop");
+    }
+
     mmio_w8(UART0_BASE + REG_THR, (uint8_t)c);
 }
 
@@ -41,13 +43,16 @@ void uart_puthex(uint64_t v)
 {
     static const char hex[] = "0123456789abcdef";
     uart_puts("0x");
-    for (int i = 60; i >= 0; i -= 4)
+    for (int i = 60; i >= 0; i -= 4) {
         uart_putc(hex[(v >> i) & 0xf]);
+    }
 }
 
 int uart_getc_nonblock(void)
 {
-    if (mmio_r8(UART0_BASE + REG_LSR) & LSR_DR)
+    if (mmio_r8(UART0_BASE + REG_LSR) & LSR_DR) {
         return mmio_r8(UART0_BASE + REG_RBR);
+    }
+
     return -1;
 }
