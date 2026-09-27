@@ -9,7 +9,7 @@ The goal is to walk the same path firmware takes on a new SoC: get a console ali
 | # | Milestone | What it proves | Status |
 |---|-----------|----------------|--------|
 | M0 | Boot + UART | Reset entry, stack, .bss, linker script, polled 16550 | Done |
-| M1 | Traps | `mtvec`, trap frame, `mcause`/`mepc`/`mtval` decode, `mret` | TODO |
+| M1 | Traps | `mtvec`, trap frame, `mcause`/`mepc`/`mtval` decode, `mret` | Done |
 | M2 | Timer interrupt | CLINT `mtime`/`mtimecmp`, `mie`/`mstatus`, periodic tick | TODO |
 | M3 | PMP + S-mode | PMP regions, `medeleg`/`mideleg`, M to S handoff, mini SBI via `ecall` | TODO |
 | M4 | PLIC | External interrupts, claim/complete, UART RX IRQ | TODO |
