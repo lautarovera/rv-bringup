@@ -31,11 +31,8 @@ trap_vector:
     sd      a6, 112(sp)
     sd      a7, 120(sp)
 
-    /* 2. Call C, then skip the trapping instruction (still +4 for now) */
+    /* 2. Call C (the C handler decides where to return by writing mepc) */
     call    trap_handler
-    csrr    t0, mepc
-    addi    t0, t0, 4
-    csrw    mepc, t0
 
     /* 3. Restore: same offsets, then release the frame and return */
     ld      ra,   0(sp)

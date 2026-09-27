@@ -10,7 +10,7 @@
  *     - call trap_handler(frame), restore registers, mret
  *     - mtvec needs 4-byte alignment (direct mode, low bits = 0)
  *  2. (DONE) Point mtvec at trap_vector (from start.S or m1_traps()).
- *  3. trap_handler(): decode mcause (interrupt bit + code), print mcause/mepc/mtval.
+ *  3. (DONE) trap_handler(): decode mcause (interrupt bit + code), print mcause/mepc/mtval.
  *     For synchronous exceptions you want to skip, advance mepc by 4
  *     (watch out for compressed 2-byte instructions if you enable C).
  *  4. Self-test: trigger `ecall` (mcause 11) and an illegal instruction (mcause 2),
@@ -18,23 +18,48 @@
  *
  * Read: RISC-V Privileged Spec, "Machine Trap Vector Base Address" and "mcause".
  */
+#include <stdint.h>
 #include "milestones.h"
 #include "csr.h"
 #include "uart.h"
 
+/* Length in bytes of the instruction at addr: 4 if the low 2 bits are 11, else 2 */
+static uint64_t insn_length(uint64_t addr)
+{
+    uint16_t first_half = *(const uint16_t *)(uintptr_t)addr;
+    return ((first_half & 0x3) == 0x3) ? 4 : 2;
+}
+
 void trap_handler(void)
 {
-    uart_puts("trap: mcause=");
-    uart_puthex(csr_read(mcause));
+    /* Read trap information from CSRs */
+    uint64_t cause = csr_read(mcause);
+    uint64_t epc   = csr_read(mepc);
+    uint64_t tval  = csr_read(mtval);
+
+    /* Decode the trap type */
+    int is_interrupt = (cause & MCAUSE_INTERRUPT) != 0;
+    uint64_t code    = cause & ~MCAUSE_INTERRUPT;
+
+    /* Print trap information */
+    uart_puts(is_interrupt ? "trap: interrupt" : "trap: exception");
+    uart_puts(" code=");
+    uart_puthex(code);
     uart_puts(" mepc=");
-    uart_puthex(csr_read(mepc));
+    uart_puthex(epc);
     uart_puts(" mtval=");
-    uart_puthex(csr_read(mtval));
+    uart_puthex(tval);
     uart_puts("\n");
+
+    /* For synchronous exceptions, advance mepc by the length of the faulting instruction */
+    if (!is_interrupt) {
+        csr_write(mepc, epc + insn_length(epc));
+    }
 }
 
 int m1_traps(void)
 {
     __asm__ volatile ("ecall");
+    __asm__ volatile ("unimp");     /* illegal instruction, 2 bytes (compressed) */
     return MS_TODO;
 }
