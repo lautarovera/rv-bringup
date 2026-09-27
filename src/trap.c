@@ -22,5 +22,6 @@
 
 int m1_traps(void)
 {
+    __asm__ volatile ("ecall");
     return MS_TODO;
 }
