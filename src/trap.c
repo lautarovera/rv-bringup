@@ -22,6 +22,7 @@
 #include "milestones.h"
 #include "csr.h"
 #include "uart.h"
+#include "timer.h"
 
 /* What the last trap was: written by trap_handler, read by the self-test */
 struct trap_record {
@@ -65,6 +66,11 @@ void trap_handler(void)
     if (!is_interrupt) {
         len = insn_length(epc);
         csr_write(mepc, epc + len);
+    }
+
+    /* Interrupts: hand them to the driver that owns the source */
+    if (is_interrupt && code == IRQ_M_TIMER) {
+        timer_interrupt();
     }
 
     /* Record the trap for the self-test */

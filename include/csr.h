@@ -30,10 +30,12 @@
 #define MIE_MSIE            (1UL << 3)
 #define MIE_MTIE            (1UL << 7)
 #define MIE_MEIE            (1UL << 11)
+#define MIP_MTIP            (1UL << 7)
 
 /* mcause */
 #define MCAUSE_INTERRUPT    (1UL << 63)
 #define CAUSE_ILLEGAL_INSN  2
 #define CAUSE_ECALL_M       11
+#define IRQ_M_TIMER         7
 
 #endif /* CSR_H */
